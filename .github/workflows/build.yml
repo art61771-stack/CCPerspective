@@ -41,6 +41,9 @@ jobs:
           test -s "$BUNDLE/LiquidGlass.metal"
           ls -l "$BUNDLE"
           echo "verified $(basename "$DEB")"
+      - name: Show stage dirs
+        if: always()
+        run: ls -R /tmp/data /tmp/ctrl 2>&1 | head -40
       - uses: actions/upload-artifact@v4
         with:
           name: CCPerspective-deb
