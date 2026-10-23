@@ -19,7 +19,7 @@ include $(THEOS)/makefiles/aggregate.mk
 _INFO_PLIST := $(CURDIR)/CCPerspective/Info.plist
 _STAGE_PLIST := $(THEOS_STAGING_DIR)$(THEOS_PACKAGE_INSTALL_PREFIX)/Library/ControlCenter/Bundles/CCPerspective.bundle/Info.plist
 
-before-package::
+internal-package-check::
 	@test -s "$(_INFO_PLIST)" || { echo "missing source Info.plist: $(_INFO_PLIST)"; exit 1; }
 	@mkdir -p "$(dir $(_STAGE_PLIST))"
 	@cp "$(_INFO_PLIST)" "$(_STAGE_PLIST)"
