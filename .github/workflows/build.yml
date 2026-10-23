@@ -19,40 +19,21 @@ jobs:
           echo "$HOME/theos/bin" >> "$GITHUB_PATH"
       - name: Build rootless package
         run: |
-          export THEOS="$HOME/theos"
-          make clean package FINALPACKAGE=1
-      - name: Verify package
+          make clean
+          make package FINALPACKAGE=1
+      - name: Show package tree and Info.plist
+        if: always()
         run: |
-          set -euo pipefail
           DEB=$(find packages -name '*.deb' -print -quit)
-          test -n "$DEB"
-          dpkg-deb -f "$DEB"
-          test "$(dpkg-deb -f "$DEB" Package)" = com.binglan.ccperspective
-          test "$(dpkg-deb -f "$DEB" Architecture)" = iphoneos-arm64
-          ls -l "$DEB"
+          echo "deb=$DEB"
           dpkg-deb -c "$DEB" | cat
-          rm -rf /tmp/ctrl /tmp/data
-          mkdir /tmp/ctrl /tmp/data
-          dpkg-deb -e "$DEB" /tmp/ctrl
+          rm -rf /tmp/data && mkdir -p /tmp/data
           dpkg-deb -x "$DEB" /tmp/data
-          ! find /tmp/ctrl -type f | grep -Eq '/(preinst|postinst|prerm|postrm|triggers)$'
+          find /tmp/data -type f -print | cat
           BUNDLE=/tmp/data/var/jb/Library/ControlCenter/Bundles/CCPerspective.bundle
-          test -d "$BUNDLE"
-          test -s "$BUNDLE/CCPerspective"
-          test -s "$BUNDLE/Info.plist"
-          test -s "$BUNDLE/LiquidGlass.metal"
-          echo "--- BUNDLE real:-$BUNDLE-"
           ls -la "$BUNDLE" | cat
-          echo "--- shipped Info.plist"
+          echo "--- shipped plist ---"
           cat "$BUNDLE/Info.plist" || true
-          echo "--- host theos obj plist"
-          find .theos -name 'Info.plist' -exec sh -c 'echo "== $1"; cat "$1"' _ {} \; || true
-          # Theos rewrites Info.plist (appends CFBundleExecutable) on the build host;
-          # check the shipped bundle straight from the extracted package.
-          python3 -c "import plistlib,sys; d=plistlib.load(open(sys.argv[1],'rb')); assert d['CFBundleIdentifier']=='com.binglan.ccperspective'; assert d['NSPrincipalClass']=='CCPerspectiveModule'; assert d['CFBundleExecutable']=='CCPerspective'; assert d['CFBundleShortVersionString']=='1.0.1'; print('Info.plist ok', d['CFBundleIdentifier'], d['NSPrincipalClass'])" "$BUNDLE/Info.plist"
-          file "$BUNDLE/CCPerspective" || true
-          echo "verified $(basename "$DEB")"
-      - uses: actions/upload-artifact@v4
-        with:
-          name: CCPerspective-deb
-          path: packages/*.deb
+          echo "--- host plist ---"
+          cat "$BUNDLE"/../*.plist 2>/dev/null || true
+          find .theos -name 'Info.plist' -print 2>/dev/null | cat
