@@ -21,19 +21,29 @@ jobs:
         run: |
           make clean
           make package FINALPACKAGE=1
-      - name: Show package tree and Info.plist
-        if: always()
+      - name: Verify package
         run: |
+          set -euo pipefail
           DEB=$(find packages -name '*.deb' -print -quit)
-          echo "deb=$DEB"
-          dpkg-deb -c "$DEB" | cat
-          rm -rf /tmp/data && mkdir -p /tmp/data
+          test -n "$DEB"
+          dpkg-deb -f "$DEB"
+          test "$(dpkg-deb -f "$DEB" Package)" = com.binglan.ccperspective
+          test "$(dpkg-deb -f "$DEB" Architecture)" = iphoneos-arm64
+          rm -rf /tmp/ctrl /tmp/data
+          mkdir /tmp/ctrl /tmp/data
+          dpkg-deb -e "$DEB" /tmp/ctrl
           dpkg-deb -x "$DEB" /tmp/data
-          find /tmp/data -type f -print | cat
+          ! find /tmp/ctrl -type f | grep -Eq '/(preinst|postinst|prerm|postrm|triggers)$'
           BUNDLE=/tmp/data/var/jb/Library/ControlCenter/Bundles/CCPerspective.bundle
+          test -d "$BUNDLE"
+          test -x "$BUNDLE/CCPerspective"
+          test -s "$BUNDLE/LiquidGlass.metal"
+          test -s "$BUNDLE/icon@3x.png"
           ls -la "$BUNDLE" | cat
-          echo "--- shipped plist ---"
-          cat "$BUNDLE/Info.plist" || true
-          echo "--- host plist ---"
-          cat "$BUNDLE"/../*.plist 2>/dev/null || true
-          find .theos -name 'Info.plist' -print 2>/dev/null | cat
+          python3 -c "import plistlib,sys; d=plistlib.load(open(sys.argv[1],'rb')); assert d['CFBundleIdentifier']=='com.binglan.ccperspective'; assert d['NSPrincipalClass']=='CCPerspectiveModule'; assert d['CFBundleExecutable']=='CCPerspective'; assert d['CFBundleShortVersionString']=='1.0.1'; print('Info.plist ok', d['CFBundleIdentifier'], d['NSPrincipalClass'], d['CFBundleExecutable'])" "$BUNDLE/Info.plist"
+          file "$BUNDLE/CCPerspective"
+          echo "verified $(basename "$DEB")"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CCPerspective-deb
+          path: packages/*.deb
