@@ -39,7 +39,12 @@ jobs:
           test -s "$BUNDLE/CCPerspective"
           test -s "$BUNDLE/Info.plist"
           test -s "$BUNDLE/LiquidGlass.metal"
-          ls -l "$BUNDLE"
+          echo "--- BUNDLE real:-$BUNDLE-"
+          ls -la "$BUNDLE" | cat
+          echo "--- shipped Info.plist"
+          cat "$BUNDLE/Info.plist" || true
+          echo "--- host theos obj plist"
+          find .theos -name 'Info.plist' -exec sh -c 'echo "== $1"; cat "$1"' _ {} \; || true
           # Theos rewrites Info.plist (appends CFBundleExecutable) on the build host;
           # check the shipped bundle straight from the extracted package.
           python3 -c "import plistlib,sys; d=plistlib.load(open(sys.argv[1],'rb')); assert d['CFBundleIdentifier']=='com.binglan.ccperspective'; assert d['NSPrincipalClass']=='CCPerspectiveModule'; assert d['CFBundleExecutable']=='CCPerspective'; assert d['CFBundleShortVersionString']=='1.0.1'; print('Info.plist ok', d['CFBundleIdentifier'], d['NSPrincipalClass'])" "$BUNDLE/Info.plist"
