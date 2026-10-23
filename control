@@ -1,0 +1,9 @@
+Package: com.binglan.ccperspective
+Name: 放大镜 (CCPerspective)
+Version: 1.0.1
+Architecture: iphoneos-arm64
+Description: 控制中心实时放大镜模块（源码重建构建）。安装后注销或重启 SpringBoard 生效。
+Maintainer: Binglan
+Author: Binglan
+Section: Tweaks
+Depends: firmware (>= 16.0)

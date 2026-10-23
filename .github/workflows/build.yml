@@ -1,0 +1,47 @@
+name: build
+on:
+  push:
+  pull_request:
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Theos and iOS SDK
+        run: |
+          git clone --recursive https://github.com/theos/theos.git "$HOME/theos"
+          mkdir -p "$HOME/theos/sdks"
+          curl -fsSL https://github.com/theos/sdks/archive/master.zip -o /tmp/sdks.zip
+          unzip -q /tmp/sdks.zip -d /tmp
+          cp -R /tmp/sdks-master/. "$HOME/theos/sdks/"
+          brew install ldid dpkg
+          echo "THEOS=$HOME/theos" >> "$GITHUB_ENV"
+          echo "$HOME/theos/bin" >> "$GITHUB_PATH"
+      - name: Build rootless package
+        run: |
+          export THEOS="$HOME/theos"
+          make clean package FINALPACKAGE=1
+      - name: Verify package
+        run: |
+          set -euo pipefail
+          DEB=$(find packages -name '*.deb' -print -quit)
+          test -n "$DEB"
+          dpkg-deb -f "$DEB"
+          test "$(dpkg-deb -f "$DEB" Package)" = com.binglan.ccperspective
+          test "$(dpkg-deb -f "$DEB" Architecture)" = iphoneos-arm64
+          rm -rf /tmp/ctrl /tmp/data
+          mkdir /tmp/ctrl /tmp/data
+          dpkg-deb -e "$DEB" /tmp/ctrl
+          dpkg-deb -x "$DEB" /tmp/data
+          ! find /tmp/ctrl -type f | grep -Eq '/(preinst|postinst|prerm|postrm|triggers)$'
+          BUNDLE=/tmp/data/var/jb/Library/ControlCenter/Bundles/CCPerspective.bundle
+          test -d "$BUNDLE"
+          test -s "$BUNDLE/CCPerspective"
+          test -s "$BUNDLE/Info.plist"
+          test -s "$BUNDLE/LiquidGlass.metal"
+          ls -l "$BUNDLE"
+          echo "verified $(basename "$DEB")"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CCPerspective-deb
+          path: packages/*.deb

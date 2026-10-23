@@ -1,0 +1,17 @@
+.theos/
+packages/
+obj/
+.DS_Store
+*.deb
+*.dylib
+*.bundle/CCPerspective
+*.ipa
+*.tipa
+*.key
+*.pem
+.env
+.env.*
+attachments/
+uploads/
+DerivedData/
+xcuserdata/

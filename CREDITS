@@ -1,0 +1,7 @@
+CCPerspective original project: Binglan.
+
+This reconstruction was created from CCPerspective 1.0.1 static observations. The user states that Binglan orally authorized complete reverse engineering, use, and public upload. No written OSI license was supplied; see LICENSE_NOTICE for scope and redistribution cautions.
+
+Resources/LiquidGlass.metal is the UTF-16 Metal source text recovered from the authorized sample. Resources/SettingsIcon@2x.png and Resources/icon@3x.png are the original sample icons. Their presence does not grant rights beyond the author's stated permission and applicable third-party terms.
+
+The reverse-engineered behavior includes UIKit view hierarchy/layer redraw, CVPixelBuffer/CVMetalTexture, CADisplayLink, Metal, MPS blur, and Control Center integration. No original Mach-O or Debian package is included.

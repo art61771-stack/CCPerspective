@@ -1,0 +1,9 @@
+CCPerspective — License and Authorization Notice
+
+Original author and copyright holder: Binglan.
+
+The user commissioning this reconstruction states that Binglan gave oral permission to reverse engineer, use, and publicly upload CCPerspective. No written OSI-approved license was supplied. Accordingly, this repository is NOT offered under MIT, GPL, Apache, BSD, or any other implied open-source license.
+
+The repository is source-available for study and use only within the scope of that stated permission. No broader patent, trademark, sublicensing, relicensing, commercial-use, or redistribution right is implied. Anyone who forks, republishes, packages, or redistributes it must independently ensure that their action remains within Binglan's authorization and all applicable third-party terms.
+
+The two icon PNG files and the Metal source recovered from the authorized sample remain attributable to Binglan/their respective rightsholders. The reconstructed Objective-C implementation is an approximation based on observable behavior and static analysis; it is not represented as byte-identical original source.
