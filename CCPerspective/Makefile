@@ -11,9 +11,6 @@ CCPerspective_CFLAGS = -fobjc-arc -Wno-deprecated-declarations -IHeaders
 CCPerspective_FRAMEWORKS = UIKit Foundation CoreFoundation QuartzCore CoreGraphics Metal MetalKit MetalPerformanceShaders CoreVideo IOSurface AudioToolbox
 CCPerspective_PRIVATE_FRAMEWORKS = ControlCenterUIKit
 CCPerspective_INSTALL_PATH = /Library/ControlCenter/Bundles
-# Be explicit: Theos otherwise only auto-detects Info.plist in some layouts and
-# silently ships a bundle without one.
-CCPerspective_BUNDLE_INFO_PLIST = Info.plist
 CCPerspective_RESOURCE_DIRS = Resources
 
 include $(THEOS_MAKE_PATH)/bundle.mk

@@ -43,12 +43,6 @@ jobs:
           python3 -c "import plistlib,sys; d=plistlib.load(open(sys.argv[1],'rb')); assert d['CFBundleIdentifier']=='com.binglan.ccperspective'; assert d['NSPrincipalClass']=='CCPerspectiveModule'; assert d['CFBundleExecutable']=='CCPerspective'; assert d['CFBundleShortVersionString']=='1.0.1'; print('Info.plist ok', d['CFBundleIdentifier'], d['NSPrincipalClass'], d['CFBundleExecutable'])" "$BUNDLE/Info.plist"
           file "$BUNDLE/CCPerspective"
           echo "verified $(basename "$DEB")"
-      - name: Debug theos gating
-        if: always()
-        run: |
-          set -x
-          make -n -C CCPerspective internal-bundle-all 2>&1 | tr ' ' '\n' | grep -n -E 'cp|Info|bundle-all|submodule|_MT' | head -60
-          find .theos -maxdepth 4 | head -40
       - uses: actions/upload-artifact@v4
         with:
           name: CCPerspective-deb
