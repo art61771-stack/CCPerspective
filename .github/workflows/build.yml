@@ -29,6 +29,8 @@ jobs:
           dpkg-deb -f "$DEB"
           test "$(dpkg-deb -f "$DEB" Package)" = com.binglan.ccperspective
           test "$(dpkg-deb -f "$DEB" Architecture)" = iphoneos-arm64
+          ls -l "$DEB"
+          dpkg-deb -c "$DEB" | cat
           rm -rf /tmp/ctrl /tmp/data
           mkdir /tmp/ctrl /tmp/data
           dpkg-deb -e "$DEB" /tmp/ctrl
